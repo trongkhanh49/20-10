@@ -33,7 +33,6 @@
             perspective: 1200px;
         }
 
-        /* Canvas nền sao, đom đóm và cánh hoa */
         #bgCanvas {
             position: fixed;
             top: 0;
@@ -44,7 +43,6 @@
             z-index: 1;
         }
 
-        /* Hiệu ứng bụi sao theo chuột/chạm tay */
         .trail-heart {
             position: fixed;
             pointer-events: none;
@@ -58,13 +56,73 @@
             100% { opacity: 0; transform: translateY(-50px) scale(1.6) rotate(25deg); }
         }
 
+        /* ================= MÀN HÌNH NHẬP MẬT KHẨU (PASSCODE) ================= */
+        .lock-screen {
+            position: relative;
+            z-index: 30;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 35px 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            width: 90%;
+            max-width: 380px;
+            transition: all 0.6s ease;
+        }
+
+        .lock-screen h3 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: #ffd166;
+            margin-bottom: 10px;
+        }
+
+        .lock-screen p {
+            color: #ffe5ec;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .passcode-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+            font-family: 'Quicksand', sans-serif;
+            letter-spacing: 3px;
+        }
+
+        .passcode-input:focus {
+            border-color: #ffd166;
+            box-shadow: 0 0 15px rgba(255, 209, 102, 0.5);
+        }
+
+        .error-msg {
+            color: #ff4d6d;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+            display: none;
+        }
+
         /* ================= PHONG BÌ 3D ================= */
         .envelope-stage {
             position: relative;
             z-index: 10;
             text-align: center;
             cursor: pointer;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+            opacity: 0;
+            transition: all 0.8s ease;
         }
 
         .envelope {
@@ -79,7 +137,6 @@
             transform-style: preserve-3d;
         }
 
-        /* Mặt trước phong bì */
         .envelope::after {
             content: '';
             position: absolute;
@@ -92,7 +149,6 @@
             z-index: 4;
         }
 
-        /* Nắp phong bì lật 3D */
         .flap {
             position: absolute;
             top: 0;
@@ -107,7 +163,6 @@
             z-index: 5;
         }
 
-        /* Tờ thư bên trong */
         .letter-preview {
             position: absolute;
             bottom: 10px;
@@ -132,7 +187,6 @@
             font-size: 1.8rem;
         }
 
-        /* Con dấu sáp vàng */
         .wax-seal {
             position: absolute;
             top: 85px;
@@ -157,7 +211,6 @@
             box-shadow: 0 0 25px #ffd166;
         }
 
-        /* Trạng thái khi bấm mở */
         .envelope.open .flap {
             transform: rotateX(180deg);
             z-index: 1;
@@ -214,7 +267,6 @@
             transform: translateY(0) scale(1);
         }
 
-        /* Khung ảnh phát sáng */
         .avatar-wrapper {
             position: relative;
             width: 115px;
@@ -275,7 +327,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Khung lời chúc */
         .wish-box {
             background: rgba(255, 255, 255, 0.93);
             color: #3b0d2c;
@@ -309,14 +360,12 @@
             margin-bottom: 20px;
         }
 
-        /* Hộp quà Gacha Bí Mật */
         .gift-section {
             background: rgba(255, 255, 255, 0.1);
             border: 1px dashed rgba(255, 209, 102, 0.6);
             border-radius: 16px;
             padding: 14px;
             margin-bottom: 20px;
-            transition: all 0.3s;
         }
 
         .voucher-result {
@@ -332,7 +381,6 @@
             animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Cụm nút bấm */
         .btn-group {
             display: flex;
             gap: 12px;
@@ -371,7 +419,6 @@
             filter: brightness(1.08);
         }
 
-        /* Đĩa than phát nhạc góc phải */
         .vinyl-player {
             position: fixed;
             bottom: 22px;
@@ -416,38 +463,40 @@
             0% { transform: scale(0.7); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-
-        @media (max-width: 480px) {
-            h1.title { font-size: 2.2rem; }
-            .main-card { padding: 25px 18px; }
-            .wish-box { font-size: 0.95rem; padding: 16px; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Nền sao, đom đóm & hoa hồng rơi -->
     <canvas id="bgCanvas"></canvas>
 
-    <!-- Giai đoạn 1: Phong bì 3D -->
+    <!-- 1. MÀN HÌNH NHẬP MẬT KHẨU -->
+    <div class="lock-screen" id="lockScreen">
+        <h3>Món Quà Có Khóa 🔒</h3>
+        <p>Nhập mật mã (Gợi ý: Ngày 20/10 viết liền: <b>2010</b>)</p>
+        <input type="password" class="passcode-input" id="passInput" placeholder="Nhập mật khẩu..." maxlength="6">
+        <br>
+        <button class="btn btn-primary" style="margin: 0 auto;" onclick="checkPasscode()">Mở Khóa Quà</button>
+        <div class="error-msg" id="errorMsg">❌ Sai mật khẩu rồi, thử lại nhé!</div>
+    </div>
+
+    <!-- 2. PHONG BÌ 3D -->
     <div class="envelope-stage" id="envelopeStage" onclick="openEnvelope()">
         <div class="envelope" id="envelope">
             <div class="flap"></div>
             <div class="letter-preview">
                 <h3>Happy 20/10 💖</h3>
-                <p style="font-size: 0.85rem; color: #777; margin-top: 6px;">Dành riêng cho người đặc biệt</p>
+                <p style="font-size: 0.85rem; color: #777; margin-top: 6px;">Món quà đặc biệt dành cho bạn</p>
             </div>
             <div class="wax-seal">🌹</div>
         </div>
         <p class="hint-text">✨ Chạm vào con dấu hoa hồng để mở thiệp ✨</p>
     </div>
 
-    <!-- Giai đoạn 2: Thiệp Glassmorphism Siêu Xịn -->
+    <!-- 3. THIỆP CHÍNH -->
     <div class="main-card" id="mainCard">
         <div class="avatar-wrapper">
             <span class="crown-icon">👑</span>
-            <!-- Thay link ảnh người nhận vào thuộc tính src bên dưới -->
-            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80" alt="Avatar 20/10">
+            <img id="receiverAvatar" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80" alt="Avatar 20/10">
         </div>
 
         <span class="badge-2010">20 • 10 • VIETNAMESE WOMEN'S DAY</span>
@@ -458,7 +507,6 @@
             <span id="typewriter"></span><span class="cursor"></span>
         </div>
 
-        <!-- Hộp quà bốc thăm may mắn -->
         <div class="gift-section">
             <p style="font-size: 0.92rem; color: #ffe5ec; margin-bottom: 8px;">
                 🎁 <b>Đặc quyền 20/10:</b> Bấm nút dưới để nhận một món quà bất ngờ!
@@ -472,23 +520,23 @@
         <div class="signature">— Gửi ngàn yêu thương 💖 —</div>
 
         <div class="btn-group">
-            <button class="btn btn-primary" onclick="burstHearts()">
-                💖 Bắn Tim Rực Rỡ
+            <button class="btn btn-primary" onclick="burstFireworks()">
+                🎆 Bắn Pháo Hoa Ăn Mừng
             </button>
         </div>
     </div>
 
-    <!-- Đĩa nhạc xoay góc dưới -->
     <audio id="bgMusic" loop>
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
     </audio>
     <div class="vinyl-player" id="vinylBtn" onclick="toggleMusic()" title="Bật/Tắt nhạc">🎵</div>
 
     <script>
-        /* ================= CẤU HÌNH NỘI DUNG ================= */
+        // Mật khẩu mở web (Bạn có thể đổi thành số khác nếu muốn)
+        const SECRET_PASS = "2010";
+
         const wishText = "Nhân ngày Phụ nữ Việt Nam 20/10, chúc bạn luôn xinh đẹp rạng ngời, tự tin tỏa sáng và ngập tràn niềm vui. Mong rằng mỗi ngày trôi qua đều là một ngày ngọt ngào, bình yên và mọi điều ước nguyện của bạn đều sớm thành hiện thực!";
 
-        // Danh sách quà ngẫu nhiên khi bấm nút Bốc Thăm
         const mysteryGifts = [
             "🎟️ Voucher: 1 ly trà sữa Full Topping tự chọn!",
             "🎟️ Voucher: 1 buổi đi ăn bất kỳ do bạn chọn quán!",
@@ -498,15 +546,48 @@
             "🎟️ Voucher: 999 lời khen và 1 cái ôm thật chặt 🤗"
         ];
 
-        /* ================= TỰ ĐỘNG NHẬN TÊN QUA LINK ================= */
-        // Ví dụ: thêm ?to=Em%20Yêu vào cuối link web
+        /* ================= TỰ ĐỘNG ĐỔI TÊN VÀ ẢNH QUA LINK ================= */
+        // Cấu trúc link: tenweb.github.io/?to=Ten&img=LinkAnh
         const urlParams = new URLSearchParams(window.location.search);
         const customName = urlParams.get('to');
+        const customImg = urlParams.get('img');
+
         if (customName) {
             document.getElementById('recipientName').innerText = `🌷 Dành tặng riêng cho: ${customName} 🌷`;
         }
+        if (customImg) {
+            document.getElementById('receiverAvatar').src = decodeURIComponent(customImg);
+        }
 
-        /* ================= XỬ LÝ MỞ PHONG BÌ 3D ================= */
+        /* ================= KIỂM TRA MẬT KHẨU ================= */
+        function checkPasscode() {
+            const inputVal = document.getElementById('passInput').value;
+            const lockScreen = document.getElementById('lockScreen');
+            const envelopeStage = document.getElementById('envelopeStage');
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (inputVal === SECRET_PASS) {
+                lockScreen.style.opacity = '0';
+                lockScreen.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    lockScreen.style.display = 'none';
+                    envelopeStage.style.display = 'block';
+                    setTimeout(() => {
+                        envelopeStage.style.opacity = '1';
+                    }, 50);
+                }, 500);
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passInput').style.borderColor = '#ff4d6d';
+            }
+        }
+
+        // Nhấn Enter để mở khóa luôn
+        document.getElementById('passInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPasscode();
+        });
+
+        /* ================= XỬ LÝ MỞ PHONG BÌ ================= */
         let idx = 0;
         let musicPlaying = false;
         const audio = document.getElementById('bgMusic');
@@ -519,20 +600,18 @@
 
             env.classList.add('open');
 
-            // Phát nhạc
             audio.play().then(() => {
                 musicPlaying = true;
                 vinylBtn.classList.add('playing');
             }).catch(() => {});
 
-            // Đợi hiệu ứng mở nắp & rút thư xong mới hiện thiệp lớn
             setTimeout(() => {
                 stage.style.opacity = '0';
                 stage.style.transform = 'scale(0.8)';
                 setTimeout(() => {
                     stage.style.display = 'none';
                     card.classList.add('show');
-                    burstHearts();
+                    burstFireworks();
                     startTyping();
                 }, 550);
             }, 1100);
@@ -546,7 +625,6 @@
             }
         }
 
-        /* ================= BỐC THĂM QUÀ & BẮN TIM ================= */
         function openMysteryGift() {
             const box = document.getElementById('voucherBox');
             const randomGift = mysteryGifts[Math.floor(Math.random() * mysteryGifts.length)];
@@ -554,18 +632,33 @@
             setTimeout(() => {
                 box.innerText = randomGift;
                 box.style.display = 'block';
-                burstHearts();
+                burstFireworks();
             }, 80);
         }
 
-        function burstHearts() {
-            const defaults = { spread: 360, ticks: 100, gravity: 0.6, decay: 0.94, startVelocity: 28 };
-            confetti({
-                ...defaults,
-                particleCount: 70,
-                scalar: 1.2,
-                colors: ['#ff4d6d', '#ff8fa3', '#ffd166', '#ffffff', '#c9184a']
-            });
+        /* ================= PHÁO HOA BẦU TRỜI ================= */
+        function burstFireworks() {
+            const duration = 2.5 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                const particleCount = 50 * (timeLeft / duration);
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#ff4d6d', '#ffd166', '#ff8fa3', '#ffffff', '#c9184a']
+                });
+            }, 250);
         }
 
         function toggleMusic() {
@@ -579,7 +672,7 @@
             musicPlaying = !musicPlaying;
         }
 
-        /* ================= HIỆU ỨNG NGHIÊNG 3D KHI DI CHUỘT ================= */
+        /* ================= 3D TILT HIỆU ỨNG NGHIÊNG ================= */
         const card = document.getElementById('mainCard');
         document.addEventListener('mousemove', (e) => {
             if (window.innerWidth > 768 && card.classList.contains('show')) {
@@ -589,7 +682,7 @@
             }
         });
 
-        /* ================= HIỆU ỨNG CHẠM TAY / CHUỘT BAY TIM ================= */
+        /* ================= HIỆU ỨNG CHUỘT BAY TIM ================= */
         let lastTrail = 0;
         function spawnTrail(x, y) {
             const now = Date.now();
@@ -611,7 +704,7 @@
             if (e.touches[0]) spawnTrail(e.touches[0].clientX, e.touches[0].clientY);
         });
 
-        /* ================= CANVAS HOA HỒNG & ĐOM ĐÓM LẤP LÁNH ================= */
+        /* ================= CANVAS NỀN SAO VÀ HOA ================= */
         const canvas = document.getElementById('bgCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
